@@ -1,0 +1,62 @@
+# Install certbot
+sudo apt -y install certbot
+sudo apt -y install python3-certbot-nginx
+
+######
+sudo certbot certonly --nginx --agree-tos -m info@<https_domain> --http-01-port 18080 \
+-d <https_domain> -d node.<https_domain> -d lnbits.<https_domain> -d btcpay.<https_domain> -d lndhub.<https_domain> -d pwallet.<https_domain> -d phoenixd.<https_domain>
+######
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+You have an existing certificate that contains a portion of the domains you
+requested (ref: /etc/letsencrypt/renewal/node.<https_domain>.conf)
+
+It contains these names: node.<https_domain>
+
+You requested these names for the new certificate: node.<https_domain>,
+lnbits.<https_domain>, btcpay.<https_domain>, lndhub.<https_domain>.
+
+Do you want to expand and replace this existing certificate with the new
+certificate?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(E)xpand/(C)ancel: ***E***
+Renewing an existing certificate for node.<https_domain> and 3 more domains
+
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/node.<https_domain>/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/node.<https_domain>/privkey.pem
+This certificate expires on 2025-07-12.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+# backup old and activate new MyNode https_public_apps cert and key
+sudo mv /home/bitcoin/.mynode/https/public_apps.crt /home/bitcoin/.mynode/https/public_apps.crt.org
+sudo mv /home/bitcoin/.mynode/https/public_apps.key /home/bitcoin/.mynode/https/public_apps.key.org
+sudo ln -s /etc/letsencrypt/live/node.<https_domain>/fullchain.pem /home/bitcoin/.mynode/https/public_apps.crt 
+sudo ln -s /etc/letsencrypt/live/node.<https_domain>/privkey.pem /home/bitcoin/.mynode/https/public_apps.key
+
+sudo ls -las /home/bitcoin/.mynode/https/
+total 28
+4 drwxr-xr-x 2 bitcoin bitcoin 4096 Apr 13 06:22 .
+4 drwxr-xr-x 4 bitcoin bitcoin 4096 Apr 11 09:30 ..
+4 -rw-r--r-- 1 bitcoin bitcoin 1663 Mar 19 11:45 myNode.local.crt
+4 -rw------- 1 bitcoin bitcoin 1704 Mar 19 11:45 myNode.local.key
+4 -rw-r--r-- 1 bitcoin bitcoin 3368 Mar 19 11:45 myNode.local.pem
+0 lrwxrwxrwx 1 root    root      55 Apr 13 06:22 public_apps.crt -> /etc/letsencrypt/live/node.<https_domain>/fullchain.pem
+4 -rw-r--r-- 1 bitcoin bitcoin 1663 Mar 19 11:45 public_apps.crt.org
+0 lrwxrwxrwx 1 root    root      53 Apr 13 06:22 public_apps.key -> /etc/letsencrypt/live/node.<https_domain>/privkey.pem
+4 -rw------- 1 bitcoin bitcoin 1704 Mar 19 11:45 public_apps.key.org
+
+# changes activations 
+sudo service nginx restart
+
+------
+Vóila!

@@ -1,0 +1,53 @@
+AI Prompts
+
+No, _we_ will make Dynamic communtity App which will create clearnet support for any app running on MyNode. We start easy by using template file from MyNode SDK to install this clearnet.
+
+to make it work I have researched and tested apps. And we need add 
+certbot and python3-certbot-nginx
+
+Then I have noticed certbot uses letsencrypt and it saves its data to local OS disk folder /etc/letsencrypt
+
+make /etc/letsencrypt as variable LETSENCRYPT_HOME
+
+I want to have data onto MyNodeBTC data disk on /mnt/hdd and there in folder
+/mnt/hdd/mynode/clearnet/letsencrypt
+
+We will not touch any of default MyNode nor other software setting files or add more software. Nor we will change any existing software code. We allways want to have the least to lines possible. And we want to use variables as mush as possible. And also we log a log file what we are doing, and we add error checks close to every command we create. Also you must keep your answers short and focused only to issue or topic I ask and only include analytic log text your answers if I ask such. Do not ask me followup questions in our answers. I will ask questions here. Ok?
+
+now we first user templatefile install_clearnet.sh which was created by SDK.
+
+File is currently this:
+#!/bin/bash
+
+source /usr/share/mynode/mynode_device_info.sh
+source /usr/share/mynode/mynode_app_versions.sh
+
+set -x
+set -e
+
+echo "==================== INSTALLING APP ===================="
+
+# The current directory is the app install folder and the app tarball from GitHub
+# has already been downloaded and extracted. Any additional env variables specified
+# in the JSON file are also present.
+
+export LETSENCRYPT_DATADIR=/mnt/hdd/mynode/clearnet/letsencrypt
+
+mkdir -p $LETSENCRYPT_DATADIR
+
+# TODO: Perform installation steps here
+sudo apt -y install certbot
+sudo apt -y install python3-certbot-nginx
+
+echo "================== DONE INSTALLING APP ================="
+
+This installed file is used also in the case where DATADIR posibly has old configuration, which we want to keep.
+
+Now 1st I'd like you to improve mkdir and ln commands.
+
+Backup /etc/letsencrypt to env folder LETSENCRYPT_BACKUPDIR located in /mnt/hdd/mynode/clearnet_backup/letsencrypt and add variable also for LETSENCRYPT_BACKUPDIR. Maximize use of variables and avoid repeating path strcigs. And add creation of such to code with same instructions as above.
+
+Lets change LETSENCRYPT_DATADIR=/mnt/hdd/mynode/clearnet/letsencrypt
+as clearnet is the app we are creating and letsencrypt is only one component of it.
+
+Enchance backup by adding tar command which creates to backup dir .tgz onding file where before .tgz is backups date and time in format YYYYMMDD-mmhhss.

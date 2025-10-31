@@ -1,0 +1,93 @@
+map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+}
+
+server {
+    listen 6000 ssl;
+    # server_name public_apps_lnbits;
+    server_name lnbits.$https_domain;
+
+    include /etc/nginx/mynode/mynode_ssl_params.conf;
+    
+    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+
+    access_log /var/log/nginx/access_public.log;
+    error_log /var/log/nginx/error_public.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+
+		proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        # WebSocket support
+        proxy_set_header Connection "upgrade";
+        
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+}
+
+server {
+    listen 6000 ssl;
+    # server_name public_apps_btcpay;
+    server_name btcpay.$https_domain;
+
+    include /etc/nginx/mynode/mynode_ssl_params.conf;
+    
+    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+
+    access_log /var/log/nginx/access_public.log;
+    error_log /var/log/nginx/error_public.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:49392;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+}
+
+server {
+    listen 6000 ssl;
+    # server_name public_apps_lndhub;
+    server_name lndhub.$https_domain;
+
+    include /etc/nginx/mynode/mynode_ssl_params.conf;
+    
+    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+
+    access_log /var/log/nginx/access_public.log;
+    error_log /var/log/nginx/error_public.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+}
+
+server {
+    listen 6000 ssl;
+    # server_name public_apps_lndhub;
+    server_name pwallet.$https_domain;
+
+    include /etc/nginx/mynode/mynode_ssl_params.conf;
+    
+    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+
+    access_log /var/log/nginx/access_public.log;
+    error_log /var/log/nginx/error_public.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:4949;
+
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+}

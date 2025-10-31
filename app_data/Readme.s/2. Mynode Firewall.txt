@@ -1,0 +1,11 @@
+# should be handled by clearnet Community / Dynamic App .json
+#
+# Add firewall rules 
+#sudo pico /usr/bin/mynode_firewall.sh 
+#add
+#ufw allow 6000  comment 'allow Public Apps - https'
+#ufw allow 18080 comment 'allow certbot'
+
+# run to activate now firewall rules now
+#sudo ufw allow 6000  comment 'allow Public Apps - https'
+#sudo ufw allow 18080 comment 'allow certbot'

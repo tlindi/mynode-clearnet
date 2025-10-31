@@ -1,0 +1,3 @@
+Configure router/modem/firewall device to 
+forward TCP 80 -> mynode (static/DHCP Reserved) IP port 18080
+forward TCP 443 -> mynode (static/DHCP Reserved) IP port 6000

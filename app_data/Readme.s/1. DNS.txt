@@ -1,0 +1,12 @@
+# Setup Dynamic DNS updated by (preferred) modem hostname eg. mynodexyz.ddns.net
+#
+# Setup to your "https_domain.tld" DNS Entries 
+#
+# @https_domain.tld
+mynode IN CNAME mynodexyz.ddns.net.
+btcpay IN CNAME mynode.https_domain.tld.
+lnbits IN CNAME mynode.https_domain.tld.
+lndhub IN CNAME mynode.https_domain.tld.
+# Optional
+# phoenixd IN CNAME mynode.https_domain.tld.
+# pwallet IN CNAME mynode.https_domain.tld.

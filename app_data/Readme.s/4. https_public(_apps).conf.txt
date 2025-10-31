@@ -1,0 +1,36 @@
+FQDN for MyNode Apps can be set by creating src file: https_public.conf.src
+
+And then sed with FQDN from file https_domain to https_public.conf 
+
+sudo sh -c '
+  domain=$(cat ....clearnet/app_data/https_domain)
+  sed "s/\$https_domain/$domain/g" \
+    ....clearnet/app_data/https_public.conf.src \
+    > /etc/nginx/sites-enabled/https_public.conf
+'
+
+server {
+    include /etc/nginx/mynode/https_domain.conf;
+
+    listen 6000 ssl;
+    server_name <appname>.$https_domain;
+...
+
+
+    #server_name lnbits.$my_fqdn;
+    server_name $my_fqdn;
+
+
+-----------------------------------------------
+
+# change https_public_apps under one TCP port
+sudo sed -i 's/listen 6001 ssl/listen 6000 ssl/g' /etc/nginx/sites-enabled/https_public_apps.conf
+sudo sed -i 's/listen 6002 ssl/listen 6000 ssl/g' /etc/nginx/sites-enabled/https_public_apps.conf
+sudo sed -i 's/listen 6003 ssl/listen 6000 ssl/g' /etc/nginx/sites-enabled/https_public_apps.conf
+
+# change nginx public_apps_* to answer hostnames
+export https_domain=salamakassa.fi
+sudo sed -i 's/public_apps_lnbits/lnbits.$https_domain/g' /etc/nginx/sites-enabled/https_public_apps.conf #ex 6001
+q #ex 6002
+sudo sed -i 's/public_apps_lndhub/lndhub.$https_domain/g' /etc/nginx/sites-enabled/https_public_apps.conf #ex 6003
+
