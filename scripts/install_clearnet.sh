@@ -41,7 +41,7 @@ if [ -L "$LETSENCRYPT_HOME" ]; then
         exit 1
     fi
 
-elif [ -L "$LETSENCRYPT_HOME" ]; then
+elif [ -d "$LETSENCRYPT_HOME" ]; then
     # Case 2 of 3: real directory, back it up
     ts=$(date +%Y%m%d-%H%M%S)
     backup_file="$LETSENCRYPT_BACKUPDIR/${APP}-letsencrypt-backup-$ts.tgz"
