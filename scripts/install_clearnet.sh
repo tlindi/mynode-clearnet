@@ -91,6 +91,49 @@ HTTPS_DOMAIN=$( { cat "$APP_DATADIR/https_domain"; } 2>/dev/null ) || {
 
 HTTPS_BASE_CERT=$(hostname).${HTTPS_DOMAIN}
 
+#
+# Obtain certificates with certbot if not already present
+# - Uses HTTP-01 on port 18080 as requested
+# - Non-interactive, agree-to-tos and sets contact email to info@${HTTPS_DOMAIN}
+#
+LE_CERT_PATH="$LETSENCRYPT_HOME/live/${HTTPS_BASE_CERT}"
+
+if [ -d "$LE_CERT_PATH" ] && [ -e "$LE_CERT_PATH/fullchain.pem" ] && [ -e "$LE_CERT_PATH/privkey.pem" ]; then
+    echo "[SKIP] Certificate for ${HTTPS_BASE_CERT} already exists at $LE_CERT_PATH"
+else
+    echo "[INFO] Requesting certificates for ${HTTPS_BASE_CERT} and subdomains via certbot"
+
+    # Build domain arguments
+    DOMAINS=(
+        "${HTTPS_BASE_CERT}"
+        "${HTTPS_DOMAIN}"
+        "lnbits.${HTTPS_DOMAIN}"
+        "btcpay.${HTTPS_DOMAIN}"
+        "lndhub.${HTTPS_DOMAIN}"
+        "pwallet.${HTTPS_DOMAIN}"
+        "phoenixd.${HTTPS_DOMAIN}"
+    )
+
+    domain_args=()
+    for d in "${DOMAINS[@]}"; do
+        domain_args+=("-d" "$d")
+    done
+
+    # Run certbot - adjust as needed if nginx needs special configuration beforehand.
+    if ! certbot certonly --nginx --non-interactive --agree-tos -m "info@${HTTPS_DOMAIN}" --http-01-port 18080 "${domain_args[@]}"; then
+        echo "[ERROR] certbot failed to obtain certificates for ${HTTPS_BASE_CERT}" >&2
+        exit 1
+    fi
+
+    # Verify creation
+    if [ -d "$LE_CERT_PATH" ] && [ -e "$LE_CERT_PATH/fullchain.pem" ] && [ -e "$LE_CERT_PATH/privkey.pem" ]; then
+        echo "[INFO] Successfully obtained certs for ${HTTPS_BASE_CERT}"
+    else
+        echo "[ERROR] certbot did not produce expected files at $LE_CERT_PATH" >&2
+        exit 1
+    fi
+fi
+
 # Create symlinks for certs
 if [ -L "$MYNODE_CERTDIR/${HTTPS_BASE_CERT}.crt" ] || [ -e "$MYNODE_CERTDIR/${HTTPS_BASE_CERT}.crt" ]; then
     echo "[ERROR] ${MYNODE_CERTDIR}/${HTTPS_BASE_CERT}.crt already exists. Aborting to avoid overwrite." >&2

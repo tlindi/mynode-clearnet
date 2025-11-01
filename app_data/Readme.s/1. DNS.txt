@@ -10,3 +10,14 @@ lndhub IN CNAME mynode.https_domain.tld.
 # Optional
 # phoenixd IN CNAME mynode.https_domain.tld.
 # pwallet IN CNAME mynode.https_domain.tld.
+
+Dynamic DNS Client and Configuration
+/etc/ddclient.conf
+#
+# /etc/ddclient.conf
+
+protocol=cloudflare,
+use=web, web=ipify-ipv4,
+password='rnsJEe9TA7M0KdLwMc2hr63y471pglkZ7OnioGvE',
+zone=salamakassa.fi,
+salamakassa.fi
