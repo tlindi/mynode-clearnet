@@ -1,4 +1,8 @@
-# Clearnet app for MyNode
+# Clearnet App for HTTPS Support
+<img src="https://github.com/tlindi/mynode-clearnet/blob/main/clearnet.png?raw=true"
+     alt="Clearnet logo"
+     width="128"
+     height="128">
 
 Ment to help advanced users to gain what is described at "Advanced Resolutions" chapter of
 [My Device has a Lightning Network Error](https://mynodebtc.github.io/troubleshooting/lightning-network-error.html).
