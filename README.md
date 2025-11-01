@@ -8,7 +8,8 @@ Target is in addition to enable publishing Apps to Clearnet as described in
 (on above link download with Right-Click and Save Link As)
 
 ## Usage
--sudo touch /mnt/hdd/mynode/certbot/certbot_dry_run
+-sudo bash
+-touch /mnt/hdd/mynode/certbot/certbot_dry_run
 then run 
 -/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
 edit
@@ -17,6 +18,12 @@ edit
 -/mnt/hdd/mynode/clearnet/https_hosts
 re-run 
 -/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+
+When looks good
+-rm /mnt/hdd/mynode/certbot/certbot_dry_run
+-/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+
+Enjoy!
 
 ## ✅ Completed Implementation
 
