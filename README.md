@@ -53,6 +53,8 @@ certbot --nginx -d node.<domain> --non-interactive --agree-tos --email <admin_em
 - [ ] Validate domain resolution and port 80/443 accessibility
 - [ ] Add renewal cron job or systemd timer
 - [ ] Add renewal hook to refresh symlinks or reload services
+- [ ] /etc/nginx/sites-enabled/https_public.conf must be placed to after certs are applied / install run
+- [ ] /etc/nginx/sites-enabled/https_public.conf must be removed and nginx restarted before uninstall
 
 ### 🖥️ MyNode Community App UI
 - [ ] Create clearnet.service for UI launch/status
