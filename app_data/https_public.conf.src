@@ -6,47 +6,90 @@ map $http_upgrade $connection_upgrade {
 server {
     listen 6000 ssl;
     # server_name public_apps_lnbits;
-    server_name lnbits.$https_domain;
+    #server_name lnbits.salamakassa.fi;
+    server_name salamakassa.fi;
 
-    include /etc/nginx/mynode/mynode_ssl_params.conf;
-    
-    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
-    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+    ssl_certificate /home/bitcoin/.mynode/https/mynode.salamakassa.fi.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/mynode.salamakassa.fi.key;
 
-    access_log /var/log/nginx/access_public.log;
-    error_log /var/log/nginx/error_public.log;
+    access_log /var/log/nginx/access_public_lnbits.log;
+    error_log /var/log/nginx/error_public_lnbits.log;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
 
-		proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        # WebSocket support
-        proxy_set_header Connection "upgrade";
-        
+        # activating map from http (eg top of the file)
+        proxy_set_header Connection $connection_upgrade;
+        #proxy_set_header Connection 'upgrade'; # No longer needed post v0.10
+#        proxy_set_header Connection "upgrade"; # Needed for LNbits bitcoinswitch WSS
+        proxy_http_version 1.1;
+
+#from LNBits 
+proxy_set_header X-Forwarded-Host $host;
+proxy_pass_request_headers on;
+#
         include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
     }
+# from https://github.com/lnbits/nostrnip5/issues/6
+#lnurlp_redirect_paths = [
+#    {
+#        "from_path": "/.well-known/lnurlp",
+#        "redirect_to_path": "/api/v1/well-known",
+#    }
+#]
+# from nostrnip05 lnbits extension
+    location /.well-known/nostr.json {
+        proxy_pass https://salamakassa.fi/nostrnip5/api/v1/domain/ajhqudM6CvM3o3ShsZbDJz/nostr.json;
+        proxy_set_header Host salamakassa.fi;
+        proxy_ssl_server_name on;
+
+        expires 5m;
+        add_header Cache-Control "public, no-transform";
+
+        proxy_cache nip5_cache;
+        proxy_cache_lock on;
+        proxy_cache_valid 200 300s;
+        proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+     }
+# from LNbits guides
+## included in MyNodeBTC file /etc/nginx/mynode/mynode_ssl_proxy_params.conf
+#    proxy_set_header Host $host;
+##    proxy_set_header Host $http_host;
+#    proxy_set_header X-Forwarded-Host $host;
+#    proxy_set_header X-Forwarded-Proto $scheme;
+##    proxy_set_header X-Forwarded-Proto https;
+##    proxy_set_header X-Real-IP $remote_addr;
+##    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#    proxy_pass_request_headers on;
+
+    # WebSocket support
+#    proxy_http_version 1.1;
+#    proxy_set_header Upgrade $http_upgrade;
+#    proxy_set_header Connection "Upgrade";
 }
+# from nostrnip05 lnbits extension
+proxy_cache_path /tmp/nginx_cache keys_zone=nip5_cache:5m levels=1:2 inactive=300s max_size=100m use_temp_path=off;
 
 server {
     listen 6000 ssl;
     # server_name public_apps_btcpay;
-    server_name btcpay.$https_domain;
+    server_name btcpay.salamakassa.fi;
 
     include /etc/nginx/mynode/mynode_ssl_params.conf;
     
-    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
-    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+    ssl_certificate /home/bitcoin/.mynode/https/mynode.salamakassa.fi.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/mynode.salamakassa.fi.key;
 
-    access_log /var/log/nginx/access_public.log;
-    error_log /var/log/nginx/error_public.log;
+    access_log /var/log/nginx/access_public_btcpay.log;
+    error_log /var/log/nginx/error_public_btcpay.log;
 
     location / {
         proxy_pass http://127.0.0.1:49392;
 
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+        proxy_set_header Upgrade $http_upgrade;
 
         include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
     }
@@ -55,15 +98,15 @@ server {
 server {
     listen 6000 ssl;
     # server_name public_apps_lndhub;
-    server_name lndhub.$https_domain;
+    server_name lndhub.salamakassa.fi;
 
     include /etc/nginx/mynode/mynode_ssl_params.conf;
     
-    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
-    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+    ssl_certificate /home/bitcoin/.mynode/https/mynode.salamakassa.fi.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/mynode.salamakassa.fi.key;
 
-    access_log /var/log/nginx/access_public.log;
-    error_log /var/log/nginx/error_public.log;
+    access_log /var/log/nginx/access_public_lndhub.log;
+    error_log /var/log/nginx/error_public_lndhub.log;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -74,19 +117,81 @@ server {
 
 server {
     listen 6000 ssl;
-    # server_name public_apps_lndhub;
-    server_name pwallet.$https_domain;
+    # server_name public_apps_NEWSERVICE;
+    server_name pwallet.salamakassa.fi;
 
     include /etc/nginx/mynode/mynode_ssl_params.conf;
     
-    ssl_certificate /home/bitcoin/.mynode/https/public_apps.crt;
-    ssl_certificate_key /home/bitcoin/.mynode/https/public_apps.key;
+    ssl_certificate /home/bitcoin/.mynode/https/mynode.salamakassa.fi.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/mynode.salamakassa.fi.key;
 
-    access_log /var/log/nginx/access_public.log;
-    error_log /var/log/nginx/error_public.log;
+    access_log /var/log/nginx/access_public_pwallet.log;
+    error_log /var/log/nginx/error_public_pwallet.log;
 
     location / {
         proxy_pass http://127.0.0.1:4949;
+
+#        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+}
+
+server {
+    listen 6000 ssl;
+    # server_name public_apps_NEWSERVICE;
+    server_name mempool.salamakassa.fi;
+
+    location / {
+        proxy_pass http://127.0.0.1:4080;
+
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+    location /ws {
+        proxy_pass http://127.0.0.1:4080/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+    location /api/v1/ws {
+        proxy_pass http://127.0.0.1:4080/api/v1/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+
+    ssl_certificate /home/bitcoin/.mynode/https/mynode.salamakassa.fi.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/mynode.salamakassa.fi.key;
+
+    access_log /var/log/nginx/access_public_mempool.log;
+    error_log /var/log/nginx/error_public_mempool.log;
+}
+
+server {
+    listen 6000 ssl;
+    # server_name public_apps_NEWSERVICE;
+    server_name albyhub.salamakassa.fi;
+
+    include /etc/nginx/mynode/mynode_ssl_params.conf;
+    
+    ssl_certificate /home/bitcoin/.mynode/https/mynode.salamakassa.fi.crt;
+    ssl_certificate_key /home/bitcoin/.mynode/https/mynode.salamakassa.fi.key;
+
+    access_log /var/log/nginx/access_public_albyhub.log;
+    error_log /var/log/nginx/error_public_albyhub.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:3040;
+
+#        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
 
         include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
     }
