@@ -1,0 +1,108 @@
+# Clearnet App Setup & Uninstall Guide
+
+This README documents the installation and removal process for the Clearnet app, including environment setup, package management, certificate handling, and cleanup procedures. All operations are designed to be idempotent, traceable, and safe for root execution.
+
+---
+
+## 🛠️ Installation Script (`clearnet_install.sh`)
+
+### ✅ Core Setup
+Defines key environment variables:
+
+```bash
+APP=clearnet
+APP_DATADIR=/mnt/hdd/mynode/clearnet
+LETSENCRYPT_HOME=/etc/letsencrypt
+LETSENCRYPT_DATADIR=$APP_DATADIR/letsencrypt
+LETSENCRYPT_BACKUPDIR=/mnt/hdd/mynode/clearnet_backup/letsencrypt
+MYNODE_CERTDIR=/home/bitcoin/.mynode/https
+📦 Package Installation
+Installs required packages only if missing:
+
+certbot
+
+python3-certbot
+
+python3-certbot-nginx
+
+Each action is logged with [INFO], [SKIP], or [ERROR].
+
+🔐 Let’s Encrypt Migration
+Handles migration of certificate data:
+
+Skips if /etc/letsencrypt is already a symlink to $LETSENCRYPT_DATADIR
+
+If it's a real directory:
+
+Creates one-time .org backup
+
+Creates timestamped .tgz backup
+
+Moves contents to $LETSENCRYPT_DATADIR
+
+Replaces original with symlink
+
+🔗 HTTPS Certificate Symlinks
+Reads domain from $APP_DATADIR/https_domain
+
+Creates symlinks in $MYNODE_CERTDIR:
+
+node.<domain>.crt → fullchain.pem
+
+node.<domain>.key → privkey.pem
+
+Aborts if symlinks already exist
+
+🧹 Uninstall Script (clearnet_uninstall.sh)
+🧾 Backup Before Removal
+Creates timestamped .tgz backup of /etc/letsencrypt
+
+Skips if directory doesn't exist
+
+🔗 Symlink Cleanup
+Removes symlinks from $MYNODE_CERTDIR based on https_domain
+
+Skips if domain file or symlinks don't exist
+
+🔄 Restore Original State
+Removes /etc/letsencrypt if it's a symlink
+
+Aborts if it's a real directory
+
+Restores from .org backup
+
+🧼 Directory Cleanup
+Removes:
+
+/opt/mynode/clearnet
+
+$APP_DATADIR
+
+Skips if not found.
+
+📦 Package Removal
+Purges:
+
+certbot
+
+python3-certbot
+
+python3-certbot-nginx
+
+Also runs:
+
+bash
+apt autoremove -y
+🧾 Logging
+All actions are logged with [INFO], [SKIP], or [ERROR] for clarity and traceability.
+
+🧠 Design Principles
+Idempotent logic: avoids overwriting existing data
+
+Safe backups: .org and .tgz formats
+
+Explicit control: checks all conditions, avoids assumptions
+
+Clear logging: consistent tags for traceability
+
+Root-safe: no sudo, assumes root execution

@@ -1,0 +1,98 @@
+Kickoff message: I want to consolidate all our work on the Clearnet app creation into one place. This includes the install_clearnet.sh script with safe backups, symlink handling for /etc/letsencrypt, conditional package installation, the companion uninstall_clearnet.sh, and the HTTPS domain integration where public_apps.crt and public_apps.key are symlinked to Let’s Encrypt certs based on the domain read from /mnt/hdd/mynode/clearnet/https_domain (originally from /opt/mynode/clearnet/app_data/https_domain). Let’s use this thread as the dedicated workspace for refining, documenting, and finalizing the full Clearnet app deployment flow.
+
+Here’s a clean consolidated transcript of all the work we’ve done around the Clearnet app install/uninstall scripting. You can copy this into a file or into a new Copilot Page to keep it organized under a new subject.
+
+📜 Clearnet App Script Development Summary
+1. Base install script structure
+Sources MyNode environment files.
+
+Defines APP=clearnet and builds all paths dynamically.
+
+Creates data and backup directories with safe permissions.
+
+Handles /etc/letsencrypt carefully:
+
+If symlink → check target, allow if correct, abort if wrong.
+
+If real directory → back it up (tar + move), then replace with symlink.
+
+If missing → create symlink fresh.
+
+Installs required packages (certbot, python3-certbot-nginx).
+
+2. Variables
+bash
+export APP=clearnet
+export APP_DATADIR=/mnt/hdd/mynode/$APP
+export APP_BACKUPDIR=/mnt/hdd/mynode/${APP}_backup
+export LETSENCRYPT_HOME=/etc/letsencrypt
+export LETSENCRYPT_DATADIR=$APP_DATADIR/letsencrypt
+export LETSENCRYPT_BACKUPDIR=$APP_BACKUPDIR/letsencrypt
+export MYNODE_CERTDIR=/home/bitcoin/.mynode/https
+3. Package installation logic
+bash
+# Install required packages only if not already installed
+for pkg in certbot python3-certbot-nginx; do
+    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+        echo "INFO: Installing missing package $pkg..."
+        sudo apt -y install "$pkg" || { echo "ERROR: Failed to install $pkg" >&2; exit 1; }
+    else
+        echo "INFO: Package $pkg already installed, skipping."
+    fi
+done
+4. Uninstall script logic
+bash
+#!/bin/bash
+set -x
+set -e
+
+echo "==================== UNINSTALLING APP ===================="
+
+export APP=clearnet
+export APP_DATADIR=/mnt/hdd/mynode/$APP
+export APP_BACKUPDIR=/mnt/hdd/mynode/${APP}_backup
+export LETSENCRYPT_HOME=/etc/letsencrypt
+export LETSENCRYPT_DATADIR=$APP_DATADIR/letsencrypt
+export LETSENCRYPT_BACKUPDIR=$APP_BACKUPDIR/letsencrypt
+export MYNODE_CERTDIR=/home/bitcoin/.mynode/https
+
+# Remove symlink if it points to our datadir
+if [ -L "$LETSENCRYPT_HOME" ]; then
+    target=$(readlink -f "$LETSENCRYPT_HOME")
+    if [ "$target" = "$LETSENCRYPT_DATADIR" ]; then
+        sudo rm -f "$LETSENCRYPT_HOME"
+    fi
+fi
+
+# Remove packages if installed
+for pkg in certbot python3-certbot-nginx; do
+    if dpkg -s "$pkg" >/dev/null 2>&1; then
+        sudo apt -y remove --purge "$pkg"
+    fi
+done
+
+echo "================== DONE UNINSTALLING APP ================="
+5. HTTPS domain handling
+bash
+# NOTE: https_domain file is originally located at:
+#       /opt/mynode/clearnet/app_data/https_domain
+
+https_domain=$(cat /mnt/hdd/mynode/clearnet/https_domain)
+
+# Backup existing cert/key
+mv "$MYNODE_CERTDIR/public_apps.crt" "$MYNODE_CERTDIR/public_apps.crt.org"
+mv "$MYNODE_CERTDIR/public_apps.key" "$MYNODE_CERTDIR/public_apps.key.org"
+
+# Create symlinks using LETSENCRYPT_HOME variable
+ln -s "$LETSENCRYPT_HOME/live/node.${https_domain}/fullchain.pem" "$MYNODE_CERTDIR/public_apps.crt"
+ln -s "$LETSENCRYPT_HOME/live/node.${https_domain}/privkey.pem"   "$MYNODE_CERTDIR/public_apps.key"
+6. Example resulting file layout
+Code
+lrwxrwxrwx 1 bitcoin bitcoin   55 Apr 13  2025 public_apps.crt -> /etc/letsencrypt/live/node.salamakassa.fi/fullchain.pem
+-rw-r--r-- 1 bitcoin bitcoin 1663 Mar 19  2025 public_apps.crt.org
+lrwxrwxrwx 1 bitcoin bitcoin   53 Apr 13  2025 public_apps.key -> /etc/letsencrypt/live/node.salamakassa.fi/privkey.pem
+-rw------- 1 bitcoin bitcoin 1704 Mar 19  2025 public_apps.key.org
+✅ This gives you a complete, ready‑to‑reuse record of all the refinements we’ve made. You can paste it into a new conversation or into a Copilot Page and title it “Clearnet App Creation” for easy reference.
+
+-------------------------
+
