@@ -6,15 +6,15 @@
         "link": "https://github.com/tlindi"
     },
     "website": {
-        "name": "tlindi/mynode-clearnet",
-        "link": "https://github.com/tlindi/mynode-clearnet"
+        "name": "GitHub",
+        "link": "https://github.com/tlindi/mynode/tree/Clearnet-FQDN-and-HTTPS-Support"
     },
     "category": "networking",
     "short_description": "HTTPS Support",
     "description": [
         "This App helps advanced users to generate custom nginx proxy config and setup SSL Certificates for HTTPS access."
     ],
-    "latest_version": "v0.0.2",
+    "latest_version": "v0.0.1",
     "supported_archs": null,
     "download_skip": true,
     "download_type": "source",
@@ -36,7 +36,7 @@
     "show_on_homepage": true,
     "show_on_status_page": true,
     "hide_status_icon": false,
-    "app_tile_name": "Clearnet Apps",
+    "app_tile_name": "Clearnet Support for Apps",
     "app_tile_running_status_text": "Running",
     "app_tile_button_text": "Info",
     "app_tile_button_href": "/app/clearnet/info",
@@ -45,20 +45,11 @@
         {
             "heading": "Instructions",
             "content": [
-                "Using Clearnet App requires from you",
-                "a) networking skills,",
-                "b) purchased domain name amd working nameserver capable to publish CNAMEs for @domain.tld,",
-                "c) public internet address on router which traffic can be forwarded to private network and",
-                "d) automatically updating Dynamic DNS Service for update DNS as public IP changes.",
-                "Then you need also manually",
-                "1) Setup DNS CNAME's to your DNS Server",
-                "2) Make router modem port forwarding configuration",
-                "3) Open Dynamic DNS Service and configure it to update your DNS Server (Static IPs ok too)",
-                "and After those work, this App will automatically",
-                "I) Apply for certificates and handle their renewals",
-                "II) Handle Dynamic DNS Updates on IP change (Static IPs ok too)",
-                "III) Setup nginx configurations to create Public Apps accessible from Internet",
-                "Good luck, and enjoy!"
+                "Using clearnet requires a) networking skills, b) purchased domain name, c) public internet address on router, which traffic can be forwarded to private network and d) automatically updating Dynamic DNS Service for update DNS as public IP changes.",
+                "1) Manual DNS CNAME's setup",
+                "2) Router Configuration",
+                "3) Setup certificates and their renewals",
+                "Enjoy!"
             ]
         }
     ],

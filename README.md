@@ -31,12 +31,6 @@ When looks good
 
 Enjoy!
 
-When looks good
--rm /mnt/hdd/mynode/certbot/certbot_dry_run
--/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
-
-Enjoy!
-
 ## ✅ Completed Implementation
 
 ### 🔧 Install Script (clearnet_install.sh)
