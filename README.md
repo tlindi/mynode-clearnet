@@ -7,6 +7,17 @@ Target is in addition to enable publishing Apps to Clearnet as described in
 [Easy switch Tor - clearnet for bundle nodes - BOLT.FUN.mhtml ](https://github.com/tlindi/mynode-clearnet/raw/main/app_data/Readme.s/Easy%20switch%20Tor%20-%20clearnet%20for%20bundle%20nodes%20-%20BOLT.FUN.mhtml) by [Darthcoin](https://darth-coin.github.io/)
 (on above link download with Right-Click and Save Link As)
 
+## Usage
+-sudo touch /mnt/hdd/mynode/certbot/certbot_dry_run
+then run 
+-/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+edit
+-/mnt/hdd/mynode/clearnet/https_domain
+-/mnt/hdd/mynode/clearnet/https_domain_contact
+-/mnt/hdd/mynode/clearnet/https_hosts
+re-run 
+-/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+
 ## ✅ Completed Implementation
 
 ### 🔧 Install Script (clearnet_install.sh)
