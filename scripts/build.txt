@@ -6,5 +6,5 @@ git clone https://github.com/tlindi/mynode-clearnet.git clearnet
 # build
 #
 cd mynode_sdk/clearnet && git stash && git pull
-mynode-sdk build clearnet && cd clearnet && git add dist/* && git commit -m 'dist' && git push
+cd .. && mynode-sdk build clearnet && cd clearnet && git add dist/* && git commit -m 'dist' && git push
 
