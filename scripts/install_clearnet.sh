@@ -105,6 +105,7 @@ EOF
     local hosts_content
     read -r -d '' hosts_content <<'EOF' || true
 # Add hosts here one each line without #
+# albyhub
 # btcpay
 # lnbits
 # lndhub
@@ -113,7 +114,7 @@ EOF
 # phoenixd
 EOF
 
-    if [ ! -f "$APP_DATADIR/http_hosts" ]; then
+    if [ ! -f "$APP_DATADIR/https_hosts" ]; then
         printf "%s\n" "$hosts_content" > "$APP_DATADIR/https_hosts"
         log "Created $APP_DATADIR/https_hosts (edit to add hosts)"
     else
@@ -204,6 +205,7 @@ read_inputs() {
             if ! echo "$host" | grep -q '\.'; then
                 host="${host}.${HTTPS_DOMAIN}"
             fi
+            log "Found host $host from $HTTPS_HOSTS_FILE"
             DOMAINS+=("$host")
         done < "$HTTPS_HOSTS_FILE"
     else
