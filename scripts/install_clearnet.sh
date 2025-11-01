@@ -505,7 +505,7 @@ obtain_and_link_cert() {
     LE_CERT_PATH="$LETSENCRYPT_HOME/live/${primary_cert_name}"
 
     log "Running single certbot invocation (primary=${primary_cert_name}) for: ${ordered[*]}"
-    certbot certonly --nginx --non-interactive --agree-tos "${DRY_RUN_FLAG[@]}" -m "$CONTACT_EMAIL" --http-01-port 18080 "${domain_args[@]}" || err "certbot failed to obtain certificates"
+    certbot certonly --expand --nginx --non-interactive --agree-tos "${DRY_RUN_FLAG[@]}" -m "$CONTACT_EMAIL" --http-01-port 18080 "${domain_args[@]}" || err "certbot failed to obtain certificates"
 
     if [ ! -d "$LE_CERT_PATH" ] || [ ! -e "$LE_CERT_PATH/fullchain.pem" ] || [ ! -e "$LE_CERT_PATH/privkey.pem" ]; then
         err "certbot did not produce expected files at $LE_CERT_PATH"
