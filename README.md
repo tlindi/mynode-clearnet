@@ -81,18 +81,18 @@ Enjoy!
 
 ### 🧩 TODOs for Full Certbot Integration & UI
 🔐 Certificate Automation
-- [ ] Add certbot command to request initial certificate:
+- [X] Add certbot command to request initial certificate:
 bash
-certbot --nginx -d node.<domain> --non-interactive --agree-tos --email <admin_email>
-- [ ] Validate domain resolution and port 80/443 accessibility
-- [ ] Add renewal cron job or systemd timer
+certbot --nginx --extend -d node.<domain> --non-interactive --agree-tos --email <admin_email>
+- [X] Validate domain and hosts DNS resolution and uses port http 18080 forwarding with ngnix
+- [X] certbot has systemd timer for renews
 - [ ] Add renewal hook to refresh symlinks or reload services
 - [ ] /etc/nginx/sites-enabled/https_public.conf must be placed to after certs are applied / install run
 - [ ] /etc/nginx/sites-enabled/https_public.conf must be removed and nginx restarted before uninstall
 
 ### 🖥️ MyNode Community App UI
 - [ ] Create clearnet.service for UI launch/status
-- [ ] Build web UI to:
+- Build web UI to:
 - [ ] Display current domain and cert status
 - [ ] Trigger cert renewal manually
 - [ ] Show logs and backup status
