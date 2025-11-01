@@ -132,7 +132,7 @@ setup_dirs_and_packages() {
     mkdir -p "$MYNODE_CERTDIR"
 
     # install certbot and plugin if missing
-    pkgs=(certbot python3-certbot python3-certbot-nginx curl)
+    pkgs=(certbot python3-certbot python3-certbot-nginx curl ddclient)
     missing=()
     for p in "${pkgs[@]}"; do
         if ! dpkg -s "$p" >/dev/null 2>&1; then
@@ -140,11 +140,11 @@ setup_dirs_and_packages() {
         fi
     done
     if [ "${#missing[@]}" -ne 0 ]; then
-        log "Installing missing packages: ${missing[*]}"
+        log "Installing missing apt packages: ${missing[*]}"
         apt-get update -y
         DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
     else
-        log "Required packages present"
+        log "Required apt packages present"
     fi
 }
 
@@ -317,7 +317,7 @@ get_public_ip() {
             ips+=("$ip")
             log "public check $s -> $ip"
         else
-            warn "public check $s returned empty"
+            err "public check $s returned empty"
         fi
     done
     # unique
@@ -343,7 +343,7 @@ check_primary_domain() {
     done < <(get_resolved_ips_cached "$fqdn" || true)
 
     if [ "${#resolved[@]}" -eq 0 ]; then
-        warn "NON-RESOLVED-PRIMARY $fqdn"
+        err "NON-RESOLVED-PRIMARY $fqdn"
         return 1
     fi
     log "RESOLVES-OK-PRIMARY $fqdn -> ${resolved[*]}"
@@ -353,7 +353,7 @@ check_primary_domain() {
             return 0
         fi
     done
-    warn "PRIMARY-NO-MATCH $fqdn resolves to ${resolved[*]} which does not match public IP ${PUBLIC_IP}"
+    err "PRIMARY-NO-MATCH $fqdn resolves to ${resolved[*]} which does not match public IP ${PUBLIC_IP}"
     return 2
 }
 
