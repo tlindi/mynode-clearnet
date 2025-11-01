@@ -105,6 +105,7 @@ EOF
     local hosts_content
     read -r -d '' hosts_content <<'EOF' || true
 # Add hosts here one each line without #
+# albyhub
 # btcpay
 # lnbits
 # lndhub
@@ -113,7 +114,7 @@ EOF
 # phoenixd
 EOF
 
-    if [ ! -f "$APP_DATADIR/http_hosts" ]; then
+    if [ ! -f "$APP_DATADIR/https_hosts" ]; then
         printf "%s\n" "$hosts_content" > "$APP_DATADIR/https_hosts"
         log "Created $APP_DATADIR/https_hosts (edit to add hosts)"
     else
@@ -132,7 +133,7 @@ setup_dirs_and_packages() {
     mkdir -p "$MYNODE_CERTDIR"
 
     # install certbot and plugin if missing
-    pkgs=(certbot python3-certbot python3-certbot-nginx curl)
+    pkgs=(certbot python3-certbot python3-certbot-nginx curl ddclient)
     missing=()
     for p in "${pkgs[@]}"; do
         if ! dpkg -s "$p" >/dev/null 2>&1; then
@@ -140,11 +141,11 @@ setup_dirs_and_packages() {
         fi
     done
     if [ "${#missing[@]}" -ne 0 ]; then
-        log "Installing missing packages: ${missing[*]}"
+        log "Installing missing apt packages: ${missing[*]}"
         apt-get update -y
         DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
     else
-        log "Required packages present"
+        log "Required apt packages present"
     fi
 }
 
@@ -204,6 +205,7 @@ read_inputs() {
             if ! echo "$host" | grep -q '\.'; then
                 host="${host}.${HTTPS_DOMAIN}"
             fi
+            log "Found host $host from $HTTPS_HOSTS_FILE"
             DOMAINS+=("$host")
         done < "$HTTPS_HOSTS_FILE"
     else
@@ -317,7 +319,7 @@ get_public_ip() {
             ips+=("$ip")
             log "public check $s -> $ip"
         else
-            warn "public check $s returned empty"
+            err "public check $s returned empty"
         fi
     done
     # unique
@@ -343,7 +345,7 @@ check_primary_domain() {
     done < <(get_resolved_ips_cached "$fqdn" || true)
 
     if [ "${#resolved[@]}" -eq 0 ]; then
-        warn "NON-RESOLVED-PRIMARY $fqdn"
+        err "NON-RESOLVED-PRIMARY $fqdn"
         return 1
     fi
     log "RESOLVES-OK-PRIMARY $fqdn -> ${resolved[*]}"
@@ -353,7 +355,7 @@ check_primary_domain() {
             return 0
         fi
     done
-    warn "PRIMARY-NO-MATCH $fqdn resolves to ${resolved[*]} which does not match public IP ${PUBLIC_IP}"
+    err "PRIMARY-NO-MATCH $fqdn resolves to ${resolved[*]} which does not match public IP ${PUBLIC_IP}"
     return 2
 }
 
