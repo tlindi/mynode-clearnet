@@ -8,16 +8,28 @@ Target is in addition to enable publishing Apps to Clearnet as described in
 (on above link download with Right-Click and Save Link As)
 
 ## Usage
--sudo bash
--touch /mnt/hdd/mynode/certbot/certbot_dry_run
+- sudo touch /mnt/hdd/mynode/certbot/certbot_dry_run
+
 then run 
--/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+- sudo bash -c 'bash /home/admin/mynode_sdk/clearnet/scripts/install_clearnet.sh'
 edit
--/mnt/hdd/mynode/clearnet/https_domain
--/mnt/hdd/mynode/clearnet/https_domain_contact
--/mnt/hdd/mynode/clearnet/https_hosts
+- sudo nano /mnt/hdd/mynode/clearnet/https_domain
+- sudo nano /mnt/hdd/mynode/clearnet/https_domain_contact
+- sudo nano /mnt/hdd/mynode/clearnet/https_hosts
+
 re-run 
--/usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+- sudo bash -c 'bash /home/admin/mynode_sdk/clearnet/scripts/install_clearnet.sh'
+
+Fix your DNS, network forwarding, dynamicdns and then
+
+- re-rerun sudo bash -c 'bash /home/admin/mynode_sdk/clearnet/scripts/install_clearnet.sh'
+
+When looks good
+
+- rm /mnt/hdd/mynode/certbot/certbot_dry_run
+- /usr/share/mynode_apps/clearnet/scripts/install_clearnet.sh
+
+Enjoy!
 
 When looks good
 -rm /mnt/hdd/mynode/certbot/certbot_dry_run
